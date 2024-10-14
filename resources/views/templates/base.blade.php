@@ -17,6 +17,7 @@
 
     <!-- Custom CSS -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+   
     
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
@@ -73,6 +74,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     
     @vite('resources/js/app.js')
+    
+    <!-- @vite('resources/js/app2.js') -->
 
  
 
@@ -81,6 +84,24 @@
 
     <!-- Include jQuery -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+<!-- Include jQuery first -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Then load Toastr -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        console.log('jQuery and Toastr are loaded successfully!');
+        
+        // Test Toastr
+     
+    });
+</script>
+
+<script src="{{ asset('js/app.js') }}"></script>
 
 </body>
 </html>

@@ -10,23 +10,44 @@ toastr.options = {
 new Vue({
     el: '#app',
 
-
     data: {
+        // Datos para categorías
         items: [],
         newItem: { nombre: '' },
         fillItem: { id: '', nombre: '' },
+
+        // Datos para libros
+        libros: [],
+        newLibro: {
+            nombre: '',
+            autor: '',
+            categoria_id: '',
+            estado_id: '',
+            descripcion: '',
+            img: ''
+        },
+        fillLibro: {
+            id: '',
+            nombre: '',
+            autor: '',
+            categoria_id: '',
+            estado_id: '',
+            descripcion: '',
+            img: ''
+        },
+        
+        // Errores compartidos
         errors: [],
-
     },
-    
-
 
     mounted() {
-        // Obtener los datos de la API al montar el componente
+        // Obtener datos de la API al montar el componente
         this.getItems();
+        this.getLibros();
     },
+
     methods: {
-        // Obtener categorías desde la API
+        // Métodos para manejar categorías
         getItems() {
             axios.get('/api/categorias')
                 .then(response => {
@@ -37,8 +58,131 @@ new Vue({
                     toastr.error('Error al obtener las categorías.');
                 });
         },
+        addItem() {
+            axios.post('/storeC', this.newItem)
+                .then(response => {
+                    if (response.data.category) {
+                        this.items.push(response.data.category);
+                    } else {
+                        toastr.error('La categoría fue agregada, pero la estructura de datos no es la esperada.');
+                    }
+                    this.newItem = { nombre: '' };
+                    this.errors = [];
+                    toastr.success('Categoría agregada correctamente.');
+                })
+                .catch(error => {
+                    console.log('Error adding item:', error);
+                    this.handleErrors(error);
+                });
+        },
+        editItem(item) {
+            this.fillItem.id = item.id;
+            this.fillItem.nombre = item.nombre;
+            $('#edit').modal('show');
+        },
+        updateItem(id) {
+            axios.put('/categorias/' + id, this.fillItem)
+                .then(response => {
+                    const index = this.items.findIndex(item => item.id === id);
+                    if (index !== -1) {
+                        this.items.splice(index, 1, response.data);
+                    }
+                    $('#edit').modal('hide');
+                    this.fillItem = { id: '', nombre: '' };
+                    this.errors = [];
+                    toastr.success('Categoría actualizada correctamente.');
+                })
+                .catch(error => {
+                    console.log('Error updating item:', error);
+                    this.handleErrors(error);
+                });
+        },
+        deleteItem(id) {
+            axios.delete('/categorias/' + id)
+                .then(response => {
+                    const index = this.items.findIndex(item => item.id === id);
+                    if (index !== -1) {
+                        this.items.splice(index, 1);
+                    }
+                    toastr.success('Categoría eliminada correctamente.');
+                })
+                .catch(error => {
+                    console.log('Error deleting item:', error);
+                    toastr.error('Hubo un error al eliminar la categoría.');
+                });
+        },
 
-        // Manejar errores de la API
+        // Métodos para manejar libros
+        getLibros() {
+            axios.get('/api/libros')
+                .then(response => {
+                    this.libros = response.data;
+                })
+                .catch(error => {
+                    console.log('Error fetching libros:', error);
+                    toastr.error('Error al obtener los libros.');
+                });
+        },
+        addLibro() {
+            axios.post('/storeLibro', this.newLibro)
+                .then(response => {
+                    if (response.data.libro) {
+                        this.libros.push(response.data.libro);
+                    } else {
+                        toastr.error('El libro fue agregado, pero la estructura de datos no es la esperada.');
+                    }
+                    this.newLibro = { nombre: '', autor: '', categoria_id: '', estado_id: '', descripcion: '', img: '' };
+                    this.errors = [];
+                    toastr.success('Libro agregado correctamente.');
+                })
+                .catch(error => {
+                    console.log('Error adding libro:', error);
+                    this.handleErrors(error);
+                });
+        },
+        editLibro(libro) {
+            this.fillLibro.id = libro.id;
+            this.fillLibro.nombre = libro.nombre;
+            this.fillLibro.autor = libro.autor;
+            this.fillLibro.categoria_id = libro.categoria_id;
+            this.fillLibro.estado_id = libro.estado_id;
+            this.fillLibro.descripcion = libro.descripcion;
+            this.fillLibro.img = libro.img;
+            $('#edit').modal('show');
+        },
+        updateLibro(id) {
+            axios.put('/libros/' + id, this.fillLibro)
+                .then(response => {
+                    const index = this.libros.findIndex(libro => libro.id === id);
+                    if (index !== -1) {
+                        this.libros.splice(index, 1, response.data);
+                    }
+                    $('#edit').modal('hide');
+                    this.fillLibro = { id: '', nombre: '', autor: '', categoria_id: '', estado_id: '', descripcion: '', img: '' };
+                    this.errors = [];
+                    toastr.success('Libro actualizado correctamente.');
+                })
+                .catch(error => {
+                    console.log('Error updating libro:', error);
+                    this.handleErrors(error);
+                });
+        },
+        deleteLibro(id) {
+            axios.delete('/libros/' + id)
+                .then(response => {
+                    const index = this.libros.findIndex(libro => libro.id === id);
+                    if (index !== -1) {
+                        this.libros.splice(index, 1);
+                    }
+                    toastr.success('Libro eliminado correctamente.');
+                })
+                .catch(error => {
+                    console.log('Error deleting libro:', error);
+                    toastr.error('Hubo un error al eliminar el libro.');
+                });
+        },
+
+        // Manejar errores de la API (compartido)
         handleErrors(error) {
             if (error.response) {
                 this.errors = error.response.data.errors
@@ -47,87 +191,6 @@ new Vue({
             } else {
                 toastr.error('Error en el servidor.');
             }
-        },
-
-        // Agregar nueva categoría
-        // Agregar nueva categoría
-// Agregar nueva categoría
-addItem() {
-    console.log('Adding item:', this.newItem);
-    axios.post('/storeC', this.newItem)
-        .then(response => {
-            // Check the response data structure
-            console.log('Response from addItem:', response.data);
-
-            // Add the new category from the response directly to the items array
-            if (response.data.category) {
-                this.items.push(response.data.category); // Now includes the full category object
-            } else {
-                console.error('Unexpected response structure:', response.data);
-                toastr.error('La categoría fue agregada, pero la estructura de datos no es la esperada.');
-            }
-
-            this.newItem = { nombre: '' };  // Clear the form
-            this.errors = [];  // Clear previous errors
-            toastr.success('Categoría agregada correctamente.');
-        })
-        .catch(error => {
-            console.log('Error adding item:', error);
-            this.handleErrors(error);
-        });
-}
-
-
-        
-        
-        
-        
-        ,
-
-        // Editar un ítem (abrir el modal con los datos del ítem seleccionado)
-        editItem(item) {
-            this.fillItem.id = item.id;
-            this.fillItem.nombre = item.nombre;
-            $('#edit').modal('show');  // Mostrar el modal
-        },
-
-        // Actualizar el ítem
-      
-
-        updateItem(id) {
-            axios.put('/categorias/' + id, this.fillItem)
-                .then(response => {
-                    // Use the response data to update the items array
-                    const index = this.items.findIndex(item => item.id === id);
-                    if (index !== -1) {
-                        this.items.splice(index, 1, response.data);  // Replace the item with the updated one
-                    }
-                    $('#edit').modal('hide');  // Hide the modal
-                    this.fillItem = { id: '', nombre: '' };  // Clear the form
-                    this.errors = [];  // Clear previous errors
-                    toastr.success('Categoría actualizada correctamente.');
-                })
-                .catch(error => {
-                    console.log('Error updating item:', error);
-                    this.handleErrors(error);
-                });
-        },        
-
-        // Eliminar un ítem
-        deleteItem(id) {
-            axios.delete('/categorias/' + id)
-                .then(response => {
-                    // Buscar y eliminar el ítem en el array de items
-                    const index = this.items.findIndex(item => item.id === id);
-                    if (index !== -1) {
-                        this.items.splice(index, 1);  // Eliminar el ítem del array
-                    }
-                    toastr.success('Categoría eliminada correctamente.');
-                })
-                .catch(error => {
-                    console.log('Error deleting item:', error);
-                    toastr.error('Hubo un error al eliminar la categoría.');
-                });
         }
     }
 });

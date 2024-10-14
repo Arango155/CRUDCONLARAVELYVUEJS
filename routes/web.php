@@ -17,7 +17,7 @@ use App\Http\Controllers\Controller as controller;
 
 //Route::get('/',[controller::class,'public']);
 
-
+//Categorias
 
 Route::get('categorias', [controller::class, 'categoriasView'])->name('categoriasview');
 Route::get('api/categorias', [controller::class, 'indexg']);
@@ -26,8 +26,23 @@ Route::put('/categorias/{id}', [controller::class, 'update']);
 Route::post('/storeC', [controller::class, 'storeC']);
 Route::delete('/categorias/{id}', [controller::class, 'destroy']);
 
+//Libros
 
 
+Route::get('libros', [controller::class, 'librosView'])->name('librosview');
+
+
+// Route to fetch all books
+Route::get('api/libros', [Controller::class, 'indexLibros']);
+
+// Route to update a specific book by its ID
+Route::put('/libros/{id}', [Controller::class, 'updateLibro']);
+
+// Route to create a new book
+Route::post('/storeLibro', [Controller::class, 'storeLibro']);
+
+// Route to delete a specific book by its ID
+Route::delete('/libros/{id}', [Controller::class, 'destroyLibro']);
 
 
 

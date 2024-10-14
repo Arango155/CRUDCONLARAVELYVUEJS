@@ -1,155 +1,83 @@
 @extends('templates/adminbase')
 
-
 @section('body')
 
+<div id="app">
+    <div class="container">
+        <div class="tab">
+            <h3>Listado de Libros en el Sistema</h3>
 
+            <!-- Add Book Form with Error Display -->
+            <form @submit.prevent="addLibro">
+                <input type="text" v-model="newLibro.nombre" placeholder="Nombre del Libro" required>
+                <input type="text" v-model="newLibro.autor" placeholder="Autor del Libro" required>
+                <input type="number" v-model="newLibro.categoria_id" placeholder="ID de la Categoria" required>
+                <input type="number" v-model="newLibro.estado_id" placeholder="ID del Estado" required>
+                <input type="text" v-model="newLibro.descripcion" placeholder="Descripción" required>
+                <input type="url" v-model="newLibro.img" placeholder="URL de la Imagen" required>
 
-<div class="container">
-    <div class="tab">
+                <span v-if="errors.length" class="text-danger">@{{ errors[0] }}</span> <!-- Error Display -->
+                <button type="submit" class="btn btn-primary">Agregar</button>
+            </form>
 
+            <hr>
 
-            <div>
-                <div class="col-sm-12">
-
-                    @if($mensaje = \Illuminate\Support\Facades\Session::get('success'))
-                    <div class="alert alert-success" role="alert">
-                        {{ $mensaje }}
-                    </div>
-                    @endif
-                    <div class="col-sm-12">
-                        @if($mensaje = \Illuminate\Support\Facades\Session::get('title'))
-                        <div class="alert alert-danger" role="alert">
-                            {{ $mensaje }}
-                        </div>
-
-                        @endif
-                        <h3>Listado en el sistema</h3>
-                        <div class="head">
-
-                            <div class="right">
-                                <form action="{{route('items')}}" method="GET">
-                                    <div class="btn-group">
-                                        <input type="text" name="search" placeholder="Buscar..." class="form-control" value="">
-                                        <button type="submit"class="btn btn-primary"><i class="bi bi-search"></i>
-                                        </button>
-
-                                </form>
-
-                            </div>
-
-                        </div>
-                        <div class="left">
-                            <a href="add" class="btn btn-primary">
-                                <span>Agregar</span>
-                            </a>
-                            <a href="excel"  class="btn btn-success">
-                                <span class="bi bi-file-excel"></span>
-                            </a>
-                        </div>
-
-
-                    </div>
-
-
-                    <hr>
-
-
-
-                    <p class="card-text">
-                    <div class="table table-responsive">
-                        <table id="table" class="table table-sm table-bordered ">
-                            <thead>
-                            <th>Codigo</th>
+            <div class="table-responsive">
+                <table id="table" class="table table-sm table-bordered">
+                    <thead>
+                        <tr>
                             <th>Nombre</th>
                             <th>Autor</th>
                             <th>Categoria</th>
                             <th>Estado</th>
+                            <th>Descripción</th>
+                            <th>Imagen</th>
                             <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="libro in libros" :key="libro.id">
+                            <td>@{{ libro.nombre }}</td>
+                            <td>@{{ libro.autor }}</td>
+                            <td>@{{ libro.categoria_id }}</td>
+                            <td>@{{ libro.estado_id }}</td>
+                            <td>@{{ libro.descripcion }}</td>
+                            <td><img :src="'images/' + libro.img" alt="Imagen del libro" style="width:100px;"></td>
 
+                            <td>
+                                <button @click="editLibro(libro)" class="btn btn-warning">✏️</button>
+                                <button @click="deleteLibro(libro.id)" class="btn btn-danger">🗑️</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
 
-
-                            </thead>
-
-
-                            <tbody>
-                            @foreach($items as $item)
-
-                            <tr>
-                                <td>{{$item->id }}</td>
-                                <td>{{$item->nombre }}</td>
-                                <td>{{$item->autor }}</td>
-                                <td>{{$item->categoria->nombre}}</td>
-                                <td>{{$item->estado->nombre}}</td>
-
-                                <td>
-
-<div class="flex">
-                                    <a href="{{route('edit',$item->id)}}" >
-                                        ✏️
-                                    </a>
-
-                                    <form id="myForm" action="{{ route('remove', $item->id) }}" id="{{($item->id)}}">
-                                        <a id="{{($item->id)}}">
-                                            🗑️
-                                        </a>
-                                    </form>
-
-    <script>
-                                        document.addEventListener("DOMContentLoaded", function() {
-                                            const form = document.getElementById("{{($item->id)}}").addEventListener("click", function(event) {
-                                                event.preventDefault();
-                                                Swal.fire({
-                                                    title: "Estas seguro de eliminar?",
-                                                    text: "No podras revertir esto!",
-                                                    icon: "warning",
-                                                    showCancelButton: true,
-                                                    confirmButtonText: "Si, eliminalo!",
-                                                    cancelButtonText: "No, cancelar!",
-                                                }).then((result) => {
-                                                    if (result.isConfirmed) {
-
-                                                        document.getElementById("myForm").submit();
-                                                    }
-                                                });
-                                            });
-                                        });
-                                    </script>
-
+        <!-- Edit Modal -->
+        <div class="modal fade" id="edit" tabindex="-1" role="dialog" aria-labelledby="editLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <form @submit.prevent="updateLibro(fillLibro.id)">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="editLabel">Editar Libro</h5>
+                        </div>
+                        <div class="modal-body">
+                            <input type="text" v-model="fillLibro.nombre" placeholder="Nombre del Libro" required>
+                            <input type="text" v-model="fillLibro.autor" placeholder="Autor del Libro" required>
+                            <input type="number" v-model="fillLibro.categoria_id" placeholder="ID de la Categoria" required>
+                            <input type="number" v-model="fillLibro.estado_id" placeholder="ID del Estado" required>
+                            <input type="text" v-model="fillLibro.descripcion" placeholder="Descripción" required>
+                            <input type="url" v-model="fillLibro.img" placeholder="URL de la Imagen" required>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">Actualizar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-                                </td>
-                            </tr>
-                            @endforeach
-                            </tbody>
 
-
-                            {{$items-> links()}}
-
-                        </table>
-
-
-
-                        <a href="list" class="btn btn-primary">
-                            <span class="bi bi-arrow-return-left"></span>
-                        </a>
-
-                        <a  class="btn btn-primary" href="libros">
-                            <span class="bi bi-arrow-clockwise" ></span>
-                        </a>
-
-
-                    </div>
-
-
-
-
-
-
-
-        @endsection
-
-        @section('footer')
-
-        @endsection
-
-
+@endsection
