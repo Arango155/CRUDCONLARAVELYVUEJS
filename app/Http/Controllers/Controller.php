@@ -83,12 +83,11 @@ class Controller extends BaseController
     
 
     
-
     public function storeC(Request $request) {
         \Log::info('Request data for storeC:', $request->all()); // Log the incoming request data
     
         try {
-            // Use $request->validate instead of $this->validate
+            // Validate the incoming request data
             $request->validate([
                 'nombre' => 'required|string|max:60|unique:categorias,nombre',
             ]);
@@ -98,14 +97,17 @@ class Controller extends BaseController
     
             \Log::info('New category created:', $categoria->toArray()); // Log the new category
     
-            return response()->json(['success' => 'Category added successfully!']);
+            // Return the newly created category along with a success message
+            return response()->json([
+                'success' => 'Category added successfully!',
+                'category' => $categoria // Include the newly created category data
+            ], 201);
         } catch (\Exception $e) {
             // Log the error if any exception occurs
             \Log::error('Error in storeC: ' . $e->getMessage() . ' | Request data: ' . json_encode($request->all()));
-            return response()->json(['error' => 'An error occurred while adding the category.'], 500);
+            return response()->json(['error' => 'Ha ocurrido un error al agregar esta categoria, verifica que no sea duplicada.'], 500);
         }
     }
-    
     
     
     

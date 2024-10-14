@@ -44,25 +44,34 @@ new Vue({
         },
 
         // Agregar nueva categoría
-        addItem() {
-            console.log('Adding item:', this.newItem);
-            axios.post('/storeC', this.newItem)
-                .then(response => {
-                    // Agregar el nuevo ítem directamente al array de items
-                    this.items.push(response.data);
-                    this.newItem = { nombre: '' };  // Limpiar el formulario
-                    this.errors = [];  // Limpiar errores previos
-                    toastr.success('Categoría agregada correctamente.');
-                })
-                .catch(error => {
-                    console.log('Error adding item:', error);
-                    this.handleErrors(error);
-                });
-        
-        
-        
-        
+        // Agregar nueva categoría
+// Agregar nueva categoría
+addItem() {
+    console.log('Adding item:', this.newItem);
+    axios.post('/storeC', this.newItem)
+        .then(response => {
+            // Check the response data structure
+            console.log('Response from addItem:', response.data);
+
+            // Add the new category from the response directly to the items array
+            if (response.data.category) {
+                this.items.push(response.data.category); // Now includes the full category object
+            } else {
+                console.error('Unexpected response structure:', response.data);
+                toastr.error('La categoría fue agregada, pero la estructura de datos no es la esperada.');
             }
+
+            this.newItem = { nombre: '' };  // Clear the form
+            this.errors = [];  // Clear previous errors
+            toastr.success('Categoría agregada correctamente.');
+        })
+        .catch(error => {
+            console.log('Error adding item:', error);
+            this.handleErrors(error);
+        });
+}
+
+
         
         
         
