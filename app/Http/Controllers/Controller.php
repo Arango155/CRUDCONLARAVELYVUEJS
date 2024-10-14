@@ -72,13 +72,17 @@ class Controller extends BaseController
         return response()->json($items);  // Return JSON response for Vue
     }
     
+   
+
     public function update(Request $request, $id) {
-        $this->validate($request, [
-            'nombre' => 'required',  // Validation rule for category name
+        $request->validate([
+            'nombre' => 'required',
         ]);
     
-        Categoria::find($id)->update($request->all());  // Update the category
-        return response()->json(['success' => 'Category updated successfully!']);
+        $categoria = Categoria::find($id);
+        $categoria->update($request->all());  // Update the category
+    
+        return response()->json($categoria);  // Return the updated category data
     }
     
 

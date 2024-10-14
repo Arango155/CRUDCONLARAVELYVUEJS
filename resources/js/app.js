@@ -9,12 +9,18 @@ toastr.options = {
 // Instancia de Vue
 new Vue({
     el: '#app',
+
+
     data: {
-        items: [],  // Array para almacenar categorías
-        newItem: { nombre: '' },  // Modelo para agregar una nueva categoría
-        fillItem: { id: '', nombre: '' },  // Modelo para editar una categoría
-        errors: []  // Manejo de errores
+        items: [],
+        newItem: { nombre: '' },
+        fillItem: { id: '', nombre: '' },
+        errors: [],
+
     },
+    
+
+
     mounted() {
         // Obtener los datos de la API al montar el componente
         this.getItems();
@@ -86,24 +92,26 @@ addItem() {
         },
 
         // Actualizar el ítem
+      
+
         updateItem(id) {
             axios.put('/categorias/' + id, this.fillItem)
                 .then(response => {
-                    // Buscar y actualizar el ítem en el array de items
+                    // Use the response data to update the items array
                     const index = this.items.findIndex(item => item.id === id);
                     if (index !== -1) {
-                        this.items.splice(index, 1, response.data);  // Reemplazar el ítem actualizado
+                        this.items.splice(index, 1, response.data);  // Replace the item with the updated one
                     }
-                    $('#edit').modal('hide');  // Ocultar el modal
-                    this.fillItem = { id: '', nombre: '' };  // Limpiar el formulario
-                    this.errors = [];  // Limpiar errores previos
+                    $('#edit').modal('hide');  // Hide the modal
+                    this.fillItem = { id: '', nombre: '' };  // Clear the form
+                    this.errors = [];  // Clear previous errors
                     toastr.success('Categoría actualizada correctamente.');
                 })
                 .catch(error => {
                     console.log('Error updating item:', error);
                     this.handleErrors(error);
                 });
-        },
+        },        
 
         // Eliminar un ítem
         deleteItem(id) {
