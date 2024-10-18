@@ -3,6 +3,9 @@
 @section('body')
 
 <div id="app">
+
+
+
     <div class="container">
         <div class="tab">
             <h3>Listado en el sistema</h3>
@@ -69,6 +72,12 @@
 
 
     </div>
+</div>
+
+<div id="nasa">
+    
+
+<nasa-data-component></nasa-data-component>
 </div>
 
 @endsection

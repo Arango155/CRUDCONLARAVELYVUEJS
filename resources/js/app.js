@@ -1,10 +1,31 @@
+
+
+import { createApp } from 'vue';
+import NasaDataComponent from './components/NasaDataComponent.vue';
+
+const nasa = createApp({});
+nasa.component('nasa-data-component', NasaDataComponent);
+nasa.mount('#nasa');
+
+
+
+
+
+
 // Configuración de Toastr (fuera de la instancia Vue)
+
+
+
+
+
 toastr.options = {
     "closeButton": true,
     "progressBar": true,
     "positionClass": "toast-top-right",
     "timeOut": "3000",
 }
+
+
 
 // Instancia de Vue
 new Vue({

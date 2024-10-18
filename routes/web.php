@@ -2,7 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\Controller as controller;
+use App\Http\Controllers\Controller as Controller;
+use App\Http\Controllers\NasaApiController;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,92 +16,45 @@ use App\Http\Controllers\Controller as controller;
 |
 */
 
-//Route::get('/',[controller::class,'public']);
-
-//Categorias
-
-Route::get('categorias', [controller::class, 'categoriasView'])->name('categoriasview');
-Route::get('api/categorias', [controller::class, 'indexg']);
-
-Route::put('/categorias/{id}', [controller::class, 'update']);
-Route::post('/storeC', [controller::class, 'storeC']);
-Route::delete('/categorias/{id}', [controller::class, 'destroy']);
-
-//Libros
-
-
-Route::get('libros', [controller::class, 'librosView'])->name('librosview');
-
-
-// Route to fetch all books
-Route::get('api/libros', [Controller::class, 'indexLibros']);
-
-// Route to update a specific book by its ID
-Route::put('/libros/{id}', [Controller::class, 'updateLibro']);
-
-// Route to create a new book
-Route::post('/storeLibro', [Controller::class, 'storeLibro']);
-
-// Route to delete a specific book by its ID
-Route::delete('/libros/{id}', [Controller::class, 'destroyLibro']);
-
-
-
-
-
-
-
-
-
+// Main route
 Route::get('/', [controller::class, 'main']) ->name("/");
 
+// Categorías routes
+Route::get('categorias', [Controller::class, 'categoriasView'])->name('categoriasview');
+Route::get('api/categorias', [Controller::class, 'indexg']);
+Route::put('/categorias/{id}', [Controller::class, 'update']);
+Route::post('/storeC', [Controller::class, 'storeC']);
+Route::delete('/categorias/{id}', [Controller::class, 'destroy']);
 
-Route::get('/public',[controller::class,'public']);
+// NASA Data route
+Route::get('/nasa-data', [NasaApiController::class, 'getNasaData']);
 
-Route::get('/prueba',[controller::class,'prueba']);
-Route::get('search',[controller::class,'search'])->name('items');
+// Libros routes
+Route::get('libros', [Controller::class, 'librosView'])->name('librosview');
+Route::get('api/libros', [Controller::class, 'indexLibros']);
+Route::put('/libros/{id}', [Controller::class, 'updateLibro']);
+Route::post('/storeLibro', [Controller::class, 'storeLibro']);
+Route::delete('/libros/{id}', [Controller::class, 'destroyLibro']);
 
-Route::get('buscar',[controller::class,'buscar'])->name('buscar');
+// Additional routes
+Route::get('/public', [Controller::class, 'public']);
+Route::get('/prueba', [Controller::class, 'prueba']);
+Route::get('search', [Controller::class, 'search'])->name('items');
+Route::get('buscar', [Controller::class, 'buscar'])->name('buscar');
+Route::get('look/{object}', [Controller::class, 'buscarC'])->name('look');
+Route::get('buscar_Autor/{object}', [Controller::class, 'buscarA'])->name('buscar_Autor');
+Route::get('buscar_Estado/{object}', [Controller::class, 'buscarE'])->name('buscar_Estado');
 
-
-Route::get('look{object}',[controller::class,'buscarC'])->name('look');
-
-Route::get('buscar_Autor{object}',[controller::class,'buscarA'])->name('buscar_Autor');
-
-Route::get('buscar_Estado{object}',[controller::class,'buscarE'])->name('buscar_Estado');
-
-
-
-//Admin
-
+// Admin routes
 Auth::routes();
 
-Route::middleware(['auth','is_user'])->group(function ()
-
-{
+Route::middleware(['auth', 'is_user'])->group(function () {
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'user'])->name('home');
-
 });
 
-Route::middleware(['auth','is_admin'])->group(function (){
+Route::middleware(['auth', 'is_admin'])->group(function () {
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'admin'])->name('home');
+    Route::get('home', [Controller::class, 'list']);
+    Route::get('libros', [Controller::class, 'indexl'])->name('librosview');
+    Route::get('excel', [Controller::class, 'excel']);
 });
-
-Route::middleware(['auth','is_admin'])->group(function ()
-
-{
-    Route::get('home',[controller::class,'list']);
-
-    Route::get('libros',[controller::class,'indexl'])->name('librosview');
-
-
-
-    Route::get('excel',[controller::class,'excel']);
-
-
-}
-);
-
-
-
-
