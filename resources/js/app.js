@@ -46,7 +46,13 @@ new Vue({
         this.getLibros();
     },
 
+    
+
     methods: {
+
+
+        
+
         // Métodos para manejar categorías
         getItems() {
             axios.get('/api/categorias')
@@ -71,6 +77,7 @@ new Vue({
                     toastr.success('Categoría agregada correctamente.');
                 })
                 .catch(error => {
+                    toastr.error(error.response.data.error);
                     console.log('Error adding item:', error);
                     this.handleErrors(error);
                 });
@@ -93,6 +100,7 @@ new Vue({
                     toastr.success('Categoría actualizada correctamente.');
                 })
                 .catch(error => {
+                    toastr.error('Error al actualizar la categoria:', error);
                     console.log('Error updating item:', error);
                     this.handleErrors(error);
                 });
@@ -136,6 +144,7 @@ new Vue({
                     toastr.success('Libro agregado correctamente.');
                 })
                 .catch(error => {
+                    toastr.error(error.response.data.error);
                     console.log('Error adding libro:', error);
                     this.handleErrors(error);
                 });
@@ -147,26 +156,26 @@ new Vue({
             this.fillLibro.categoria_id = libro.categoria_id;
             this.fillLibro.estado_id = libro.estado_id;
             this.fillLibro.descripcion = libro.descripcion;
-            this.fillLibro.img = libro.img;
+            // this.fillLibro.img = libro.img;
             $('#edit').modal('show');
         },
         updateLibro(id) {
             axios.put('/libros/' + id, this.fillLibro)
                 .then(response => {
+                    console.log(response.data);  // Log response data to check what's coming back
                     const index = this.libros.findIndex(libro => libro.id === id);
                     if (index !== -1) {
                         this.libros.splice(index, 1, response.data);
                     }
                     $('#edit').modal('hide');
-                    this.fillLibro = { id: '', nombre: '', autor: '', categoria_id: '', estado_id: '', descripcion: '', img: '' };
-                    this.errors = [];
                     toastr.success('Libro actualizado correctamente.');
                 })
                 .catch(error => {
-                    console.log('Error updating libro:', error);
-                    this.handleErrors(error);
+                    console.error('Error al actualizar libro:', error.response.data);
+                    toastr.error('Error al actualizar libro:', error.response.data.message || 'Unknown error');
                 });
         },
+        
         deleteLibro(id) {
             axios.delete('/libros/' + id)
                 .then(response => {

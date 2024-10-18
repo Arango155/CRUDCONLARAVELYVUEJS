@@ -11,7 +11,7 @@
                 <!-- Add Category Form with Error Display -->
             <form @submit.prevent="addItem">
                 <input type="text" v-model="newItem.nombre" placeholder="Nombre de la Categoria" required>
-                <span v-if="errors.length" class="text-danger">@{{ errors[0] }}</span> <!-- Error Display -->
+                <!-- <span v-if="errors.length" class="text-danger">@{{ errors[0] }}</span>  -->
                 <button type="submit" class="btn btn-primary">Agregar</button>
             </form>
 

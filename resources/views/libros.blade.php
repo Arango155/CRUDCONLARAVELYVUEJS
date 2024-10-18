@@ -16,7 +16,7 @@
                 <input type="text" v-model="newLibro.descripcion" placeholder="Descripción" required>
                 <input type="url" v-model="newLibro.img" placeholder="URL de la Imagen" required>
 
-                <span v-if="errors.length" class="text-danger">@{{ errors[0] }}</span> <!-- Error Display -->
+                <!-- <span v-if="errors.length" class="text-danger">@{{ errors[0] }}</span>  -->
                 <button type="submit" class="btn btn-primary">Agregar</button>
             </form>
 
@@ -68,7 +68,7 @@
                             <input type="number" v-model="fillLibro.categoria_id" placeholder="ID de la Categoria" required>
                             <input type="number" v-model="fillLibro.estado_id" placeholder="ID del Estado" required>
                             <input type="text" v-model="fillLibro.descripcion" placeholder="Descripción" required>
-                            <input type="url" v-model="fillLibro.img" placeholder="URL de la Imagen" required>
+                            <!-- <input type="url" v-model="fillLibro.img" placeholder="URL de la Imagen" required> -->
                         </div>
                         <div class="modal-footer">
                             <button type="submit" class="btn btn-primary">Actualizar</button>

@@ -90,7 +90,6 @@ class Controller extends BaseController
     }
     
 
-    
     public function storeC(Request $request) {
         \Log::info('Request data for storeC:', $request->all()); // Log the incoming request data
     
@@ -113,9 +112,14 @@ class Controller extends BaseController
         } catch (\Exception $e) {
             // Log the error if any exception occurs
             \Log::error('Error in storeC: ' . $e->getMessage() . ' | Request data: ' . json_encode($request->all()));
-            return response()->json(['error' => 'Ha ocurrido un error al agregar esta categoria, verifica que no sea duplicada.'], 500);
+    
+            // Return a JSON response with an error message
+            return response()->json([
+                'error' => 'Ha ocurrido un error al agregar esta categoria, verifica que no sea duplicada.'
+            ], 500);
         }
     }
+    
     
     
     
@@ -149,24 +153,32 @@ class Controller extends BaseController
         return response()->json($items);  // Return JSON response for Vue
     }
     
-    public function updateLibro(Request $request, $id) {
-        // Validate the request fields for updating a book
-        $request->validate([
-            'nombre' => 'required|string|max:100',
-            'autor' => 'required|string|max:60',
-            'categoria_id' => 'required|exists:categorias,id',
-            'estado_id' => 'required|exists:estados,id',
-            'descripcion' => 'required|string|max:300',
-            'img' => 'nullable|string|max:3000',  // Allow image to be optional
+    public function updateLibro(Request $request, $id)
+    {
+        $libro = Libro::find($id);
+        
+        if (!$libro) {
+            return response()->json(['error' => 'Libro not found'], 404);
+        }
+    
+        // Validate the incoming request
+        $validatedData = $request->validate([
+            'nombre' => 'required|string|max:255',
+            'autor' => 'required|string|max:255',
+            'categoria_id' => 'required|integer',
+            'estado_id' => 'required|integer',
+            'descripcion' => 'nullable|string',
+            // other fields...
         ]);
     
-        // Find the book by its ID and update it with the request data
-        $libro = Libro::find($id);
-        $libro->update($request->all());
+        // Update the libro with the validated data
+        $libro->update($validatedData);
     
-        return response()->json($libro);  // Return the updated book data
+        return response()->json(['success' => 'Libro updated successfully'], 200);
     }
     
+    
+
     public function storeLibro(Request $request) {
         \Log::info('Request data for storeLibro:', $request->all()); // Log the incoming request data
         
@@ -194,7 +206,11 @@ class Controller extends BaseController
         } catch (\Exception $e) {
             // Log the error if any exception occurs
             \Log::error('Error in storeLibro: ' . $e->getMessage() . ' | Request data: ' . json_encode($request->all()));
-            return response()->json(['error' => 'Ha ocurrido un error al agregar este libro, verifica que no sea duplicado.'], 500);
+    
+            // Return a JSON response with an error message
+            return response()->json([
+                'error' => 'Ha ocurrido un error al agregar este libro, verifica que no sea duplicado.'
+            ], 500);
         }
     }
     
